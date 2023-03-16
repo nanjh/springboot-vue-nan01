@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nan.common.QueryPageParam;
+import com.nan.common.Result;
 import com.nan.entity.User;
 import com.nan.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -121,5 +122,34 @@ public class UserController {
         System.out.println("total ==" + result.getTotal());
         //System.out.println(result);
         return result.getRecords();
+    }
+
+    @PostMapping("/listResult")
+    public Result listResult(@RequestBody QueryPageParam query) {
+        /*System.out.println(query);
+        System.out.println("num ===" + query.getPageNum());
+        System.out.println("size ===" + query.getPageSize());*/
+        HashMap param = query.getParam();
+        String name = (String) param.get("name");
+
+        System.out.println("name ===" + name);
+
+        /**
+         * current: 当前页
+         * size: 每页多少条
+         */
+        Page<User> page = new Page<>();
+        page.setCurrent(query.getPageNum());
+        page.setSize(query.getPageSize());
+
+        LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.like(User::getName, name);
+
+        //分页
+        //IPage result = userService.pageC(page);
+        IPage result = userService.pageCC(page, lambdaQueryWrapper);
+        System.out.println("total ==" + result.getTotal());
+        //System.out.println(result);
+        return Result.success(result.getRecords(), result.getTotal());
     }
 }
