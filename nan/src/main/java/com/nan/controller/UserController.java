@@ -3,11 +3,13 @@ package com.nan.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nan.common.QueryPageParam;
 import com.nan.common.Result;
 import com.nan.entity.User;
 import com.nan.service.IUserService;
+import freemarker.template.utility.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -61,11 +63,13 @@ public class UserController {
 
     // 查询(模糊、匹配)
     @PostMapping("/listP")
-    public List<User> listP(@RequestBody User user) {
+    public Result listP(@RequestBody User user) {
         LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper();
-        lambdaQueryWrapper.eq(User::getName, user.getName());
+        if(StringUtils.isNotBlank(user.getName())) {
+            lambdaQueryWrapper.like(User::getName, user.getName());
+        }
 
-        return userService.list(lambdaQueryWrapper);
+        return Result.success(userService.list(lambdaQueryWrapper));
     }
 
     @PostMapping("/listPage")
@@ -143,12 +147,16 @@ public class UserController {
         page.setSize(query.getPageSize());
 
         LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.like(User::getName, name);
+        if(StringUtils.isNotBlank(name)) {
+            lambdaQueryWrapper.like(User::getName, name);
+        }
+
 
         //分页
         //IPage result = userService.pageC(page);
         IPage result = userService.pageCC(page, lambdaQueryWrapper);
         System.out.println("total ==" + result.getTotal());
+        System.out.println(result.getRecords());
         //System.out.println(result);
         return Result.success(result.getRecords(), result.getTotal());
     }
