@@ -39,8 +39,14 @@ public class UserController {
 
     // 新增
     @PostMapping("/save")
-    public boolean save(@RequestBody User user) {
-        return userService.save(user);
+    public Result save(@RequestBody User user) {
+        return userService.save(user) ? Result.success():Result.fail();
+    }
+
+
+    @PostMapping("/update")
+    public Result update(@RequestBody User user) {
+        return userService.updateById(user) ? Result.success():Result.fail();
     }
 
     // 修改
@@ -99,6 +105,13 @@ public class UserController {
         return result.getRecords();
     }
 
+
+    @GetMapping("/findByNo")
+    public Result findByNo(@RequestParam String no) {
+        List<User> list = userService.lambdaQuery().eq(User::getNo, no).list();
+        return list.size()>0?Result.success(list):Result.fail();
+    }
+
     @PostMapping("/listPageC")
     public List<User> listPageC(@RequestBody QueryPageParam query) {
         /*System.out.println(query);
@@ -135,6 +148,7 @@ public class UserController {
         System.out.println("size ===" + query.getPageSize());*/
         HashMap param = query.getParam();
         String name = (String) param.get("name");
+        String sex = (String) param.get("sex");
 
         System.out.println("name ===" + name);
 
@@ -151,6 +165,10 @@ public class UserController {
             lambdaQueryWrapper.like(User::getName, name);
         }
 
+        if(StringUtils.isNotBlank(sex)) {
+            lambdaQueryWrapper.eq(User::getSex, sex);
+        }
+
 
         //分页
         //IPage result = userService.pageC(page);
@@ -160,4 +178,7 @@ public class UserController {
         //System.out.println(result);
         return Result.success(result.getRecords(), result.getTotal());
     }
+
+
+
 }
