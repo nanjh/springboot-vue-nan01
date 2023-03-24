@@ -44,11 +44,26 @@ public class UserController {
     }
 
 
+    //更新
     @PostMapping("/update")
     public Result update(@RequestBody User user) {
         return userService.updateById(user) ? Result.success():Result.fail();
     }
 
+    //删除
+    @GetMapping("/del")
+    public Result del(@RequestParam String id) {
+        return userService.removeById(id) ? Result.success():Result.fail();
+    }
+
+    //登陆
+    @PostMapping("/login")
+    public Result login(@RequestBody User user) {
+        List list = userService.lambdaQuery().eq(User::getNo, user.getNo())
+                .eq(User::getPassword, user.getPassword()).list();
+
+        return list.size()>0 ? Result.success(list.get(0)):Result.fail();
+    }
     // 修改
     @PostMapping("/mod")
     public boolean mod(@RequestBody User user) {
