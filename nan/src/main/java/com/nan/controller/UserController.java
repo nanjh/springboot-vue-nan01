@@ -7,7 +7,9 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nan.common.QueryPageParam;
 import com.nan.common.Result;
+import com.nan.entity.Menu;
 import com.nan.entity.User;
+import com.nan.service.IMenuService;
 import com.nan.service.IUserService;
 import freemarker.template.utility.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +33,8 @@ import java.util.List;
 public class UserController {
     @Autowired
     IUserService userService;
-
+    @Autowired
+    private IMenuService menuService;
     @GetMapping("/list")
     public List<User> list() {
         return userService.list();
@@ -62,7 +65,17 @@ public class UserController {
         List list = userService.lambdaQuery().eq(User::getNo, user.getNo())
                 .eq(User::getPassword, user.getPassword()).list();
 
-        return list.size()>0 ? Result.success(list.get(0)):Result.fail();
+
+        if(list.size() > 0) {
+            User user1 = (User) list.get(0);
+            List<Menu> menuList = menuService.lambdaQuery().like(Menu::getMenuright, user1.getRoleId()).list();
+            HashMap res = new HashMap();
+            res.put("user", user1);
+            res.put("menu", menuList);
+            return Result.success(res);
+        }
+
+        return Result.fail();
     }
     // 修改
     @PostMapping("/mod")
@@ -164,6 +177,7 @@ public class UserController {
         HashMap param = query.getParam();
         String name = (String) param.get("name");
         String sex = (String) param.get("sex");
+        String roleId = (String) param.get("roleId");
 
         System.out.println("name ===" + name);
 
@@ -184,6 +198,9 @@ public class UserController {
             lambdaQueryWrapper.eq(User::getSex, sex);
         }
 
+        if(StringUtils.isNotBlank(roleId)) {
+            lambdaQueryWrapper.eq(User::getRoleId, roleId);
+        }
 
         //分页
         //IPage result = userService.pageC(page);
