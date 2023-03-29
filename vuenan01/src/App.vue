@@ -5,12 +5,15 @@
 </template>
 
 <script>
-
-
+import {ref} from 'vue'
+import store from './store'
 export default {
+  
   name: 'App',
   components: {
     
+  },
+  data() {
   }
 }
 </script>

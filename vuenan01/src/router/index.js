@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory }  from 'vue-router';
-
+import {addNewRoute} from '../store';
 const routes = [
     {
         path:'/',
@@ -46,5 +46,7 @@ const router  = createRouter(
         routes
     }
 )
+
+
 
 export default router;

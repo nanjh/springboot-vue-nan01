@@ -47,6 +47,7 @@ export default {
       icon:''
     }
   },
+  
   methods:{
     doCollapse(){
       //console.log(111)

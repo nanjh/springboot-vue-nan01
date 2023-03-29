@@ -43,7 +43,10 @@ export default {
             // ]
         }
     },
-
+    created(){
+        const menu = JSON.parse(sessionStorage.getItem('menu'));
+        this.$store.commit("setMenu",menu)
+    },
     computed:{
         "menu":{
             get(){

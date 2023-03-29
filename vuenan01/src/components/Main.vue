@@ -326,7 +326,8 @@ export default {
     },
     resetParam() {
       this.name = '';
-      this.sex = ''
+      this.sex = '';
+      this.loadPost();
     },
     add() {
       // 当点击add按钮时，使visible默认false变为true
